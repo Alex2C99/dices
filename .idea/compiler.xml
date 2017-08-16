@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="HaskellBuildOptions">
+    <useCabal>true</useCabal>
+    <ghcPath>D:\HaskellP\bin\ghc.exe</ghcPath>
+    <cabalPath>D:\tt\cabal\bin\cabal.exe</cabalPath>
+    <stackPath>D:\tt\HaskellStack\stack.exe</stackPath>
+    <stackFile>$PROJECT_DIR$/../dices\stack.yaml</stackFile>
+  </component>
+</project>
