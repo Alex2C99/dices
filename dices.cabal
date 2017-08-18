@@ -15,7 +15,7 @@ cabal-version:        >=1.10
 
 executable dices
   main-is:              Main.hs
-  -- other-modules:
+  other-modules:        Dices
   -- other-extensions:
   build-depends:        base >= 4.7 && < 5, random
   hs-source-dirs:       src
