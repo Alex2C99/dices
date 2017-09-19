@@ -7,14 +7,9 @@
     </content>
     <orderEntry type="jdk" jdkName="Haskell" jdkType="Haskell SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Win32-2.3.1.1" level="project" />
-    <orderEntry type="library" name="array-0.5.1.1" level="project" />
-    <orderEntry type="library" name="base-4.9.1.0" level="project" />
-    <orderEntry type="library" name="bytestring-0.10.8.1" level="project" />
-    <orderEntry type="library" name="deepseq-1.4.2.0" level="project" />
-    <orderEntry type="library" name="ghc-prim-0.5.0.0" level="project" />
-    <orderEntry type="library" name="integer-gmp-1.0.0.1" level="project" />
+    <orderEntry type="library" name="base-4.10.0.0" level="project" />
+    <orderEntry type="library" name="ghc-prim-0.5.1.0" level="project" />
+    <orderEntry type="library" name="integer-gmp-1.0.1.0" level="project" />
     <orderEntry type="library" name="random-1.1" level="project" />
-    <orderEntry type="library" name="time-1.6.0.1" level="project" />
   </component>
 </module>
