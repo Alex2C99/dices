@@ -32,7 +32,7 @@ type PartyTemplate = [MemberTemplate]
 genAttrFromTemplate :: AttribTemplate -> IO Int
 genAttrFromTemplate atml = do
     dc <- cast (throw atml) (top atml)
-    return (sumd dc)
+    return (start atml + sumd dc)
 
 genMemberFromTemplate :: String -> MemberTemplate -> IO Member
 genMemberFromTemplate nm tml = do
