@@ -47,8 +47,7 @@ getDamage mb dmg
 doHit :: Member -> Member -> IO Member
 doHit attacker target = do
    logBegin attacker target
-   hit <- isHit target
-   execHit attacker target hit
+   isHit target >>= execHit attacker target
    where
      execHit a t True = do
         (Single dmg) <- cast One (weapon a)
