@@ -42,14 +42,15 @@ isHit mb = do
     return (d > armor mb)
 
 getDamage :: Member -> Int -> Member
-getDamage mb dmg  
+getDamage mb dmg
     | isAlive mb = mb { health = if health mb - dmg > 0 then health mb - dmg else 0 }
     | otherwise  = mb
 
 doHit :: Member -> Member -> IO Member
 doHit attacker target = do
-    hit <- isHit target
-    execHit hit attacker target
+   logBegin attacker target
+   hit <- isHit target
+   execHit hit attacker target
    where
      execHit True a t = do
         (Single dmg) <- cast One (weapon a)
@@ -58,10 +59,10 @@ doHit attacker target = do
         logFinish nt
         return nt
      execHit False _ _ = do
-        logResult False 0
+        logResult False (0 :: Int)
         return target
      logBegin a t = putStr $ name attacker ++ " attacks " ++ name target ++ " "
-     logResult True v = putStr $ "Hit! Damage: " ++ show v ++ "\n"
+     logResult True v  = putStr $ "Hit! Damage: " ++ show v ++ "\n"
      logResult False _ = putStr "Miss!\n"
      logFinish t = when (health t == 0) $ putStrLn $ name t ++ " killed!\n"
 
