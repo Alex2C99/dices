@@ -37,9 +37,7 @@ isAlive :: Member -> Bool
 isAlive mb = health mb > 0
 
 isHit :: Member -> IO Bool
-isHit mb = do
-    (Single d) <- cast One 20
-    return (d > armor mb)
+isHit mb = ((> armor mb) . sumd) <$> cast One 20
 
 getDamage :: Member -> Int -> Member
 getDamage mb dmg
@@ -50,17 +48,17 @@ doHit :: Member -> Member -> IO Member
 doHit attacker target = do
    logBegin attacker target
    hit <- isHit target
-   execHit hit attacker target
+   execHit attacker target hit
    where
-     execHit True a t = do
+     execHit a t True = do
         (Single dmg) <- cast One (weapon a)
         logResult True dmg
         let nt = getDamage t dmg
         logFinish nt
         return nt
-     execHit False _ _ = do
+     execHit _ t False = do
         logResult False (0 :: Int)
-        return target
+        return t
      logBegin a t = putStr $ name attacker ++ " attacks " ++ name target ++ " "
      logResult True v  = putStr $ "Hit! Damage: " ++ show v ++ "\n"
      logResult False _ = putStr "Miss!\n"
@@ -70,9 +68,8 @@ getMaxHealth :: [Member] -> Member
 getMaxHealth = maximumBy (\a b -> compare (health a) (health b))
 
 genAttrFromTemplate :: AttribTemplate -> IO Int
-genAttrFromTemplate atml = do
-    dc <- cast (throw atml) (top atml)
-    return (start atml + sumd dc)
+genAttrFromTemplate atml = ((start atml +) . sumd) <$> cast (throw atml) (top atml)
+
 
 genMemberFromTemplate :: String -> MemberTemplate -> IO Member
 genMemberFromTemplate nm tml = do
