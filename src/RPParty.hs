@@ -68,7 +68,7 @@ doHit attacker target = do
      execHit _ t False = do
         logResult False (0 :: Int)
         return t
-     logBegin a t = putStr $ name attacker ++ " attacks " ++ name target ++ " "
+     logBegin a t = putStr $ name attacker ++ " attacks " ++ name target ++ ". "
      logResult True v  = putStr $ "Hit! Damage: " ++ show v ++ "\n"
      logResult False _ = putStr "Miss!\n"
      logFinish t = when (health t == 0) $ putStrLn $ name t ++ " killed!\n"
@@ -106,3 +106,11 @@ halfRound attacker defender = do
     return defender { members = newmbs }
     where
       attackBy attP defP = foldM (\dp a -> strategy a a dp) defP attP
+
+fighterTemlate = MTml {
+  healthTml = ATml { throw = One, start = 10, top = 20 },
+  weaponTml = ATml { throw = One, start = 0, top = 9 },
+  armorTml = ATml  { throw = One, start = 0, top = 15 },
+  strategyTml = maxHealthStrategy
+}
+                 
