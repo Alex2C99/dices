@@ -76,6 +76,9 @@ doHit attacker target = do
 getMaxHealth :: [Member] -> Member
 getMaxHealth = maximumBy (\a b -> compare (health a) (health b))
 
+getMinHealth :: [Member] -> Member
+getMinHealth = minimumBy (\a b -> compare (health a) (health b))
+
 genAttrFromTemplate :: AttribTemplate -> IO Int
 genAttrFromTemplate atml = fmap ((start atml +) . sumd) (cast (throw atml) (top atml))
 
@@ -94,18 +97,27 @@ genPartyFromTemplate t nms ptml = do
 allDead :: Party -> Bool
 allDead p = all (not . isAlive) (members p)
 
+hitOneStrategy :: ([Member] -> Member) -> Strategy
+hitOneStrategy f am defms = mapM hitOne defms
+  where 
+  hitOne d
+    | d == f defms = doHit am d
+    | otherwise    = return d
+
+hitAllStrategy :: Strategy
+hitAllStrategy am = mapM (doHit am)
+
 maxHealthStrategy :: Strategy
-maxHealthStrategy am defms = do 
-  let mh = getMaxHealth defms
-  mapM (\defm -> if defm == mh then doHit am defm else return defm) defms
+maxHealthStrategy = hitOneStrategy getMaxHealth
+
+minHealthStrategy :: Strategy
+minHealthStrategy = hitOneStrategy getMinHealth 
 
 halfRound :: Party -> Party -> IO Party
 halfRound attacker defender = do
     putStrLn $ "Party " ++ title attacker ++ "attacks:\n"
-    newmbs <- attackBy (filter isAlive (members attacker)) (members defender)
+    newmbs <- foldM (\dp a -> strategy a a dp) (filter isAlive (members attacker)) (members defender)
     return defender { members = newmbs }
-    where
-      attackBy attP defP = foldM (\dp a -> strategy a a dp) defP attP
 
 fighterTemlate = MTml {
   healthTml = ATml { throw = One, start = 10, top = 20 },
