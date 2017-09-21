@@ -13,15 +13,17 @@ data AttribTemplate = ATml {
 data MemberTemplate = MTml {
     healthTml :: AttribTemplate,
     armorTml  :: AttribTemplate,
-    weaponTml :: AttribTemplate
+    weaponTml :: AttribTemplate,
+    strategyTml :: Strategy
   }
 
 data Member = Member {
     name   :: String,
     health :: Int,
     armor  :: Int,
-    weapon :: Int
-  } deriving (Eq)
+    weapon :: Int,
+    strategy :: Strategy
+  }
 
 data Party = Party {
     title   :: String,
@@ -29,6 +31,19 @@ data Party = Party {
   }
 
 type PartyTemplate = [MemberTemplate]
+
+type Strategy = Member -> [Member] -> IO [Member]
+
+instance Eq Member where
+  (==) m1 m2 = (name m1 == name m2) 
+    && (health m1 == health m2) 
+    && (armor m1 == armor m2) 
+    && (weapon m1 == weapon m2) 
+
+maxHealthStrategy :: Strategy
+maxHealthStrategy am defms = do 
+  let mh = getMaxHealth defms
+  mapM (\defm -> if defm == mh then doHit am defm else return defm) defms
 
 noname :: String
 noname = "NoName"
@@ -69,13 +84,12 @@ getMaxHealth = maximumBy (\a b -> compare (health a) (health b))
 genAttrFromTemplate :: AttribTemplate -> IO Int
 genAttrFromTemplate atml = fmap ((start atml +) . sumd) (cast (throw atml) (top atml))
 
-
 genMemberFromTemplate :: String -> MemberTemplate -> IO Member
 genMemberFromTemplate nm tml = do
     h <- genAttrFromTemplate (healthTml tml)
     a <- genAttrFromTemplate (armorTml tml)
     w <- genAttrFromTemplate (weaponTml tml)
-    return Member { name = nm, health = h, armor = a, weapon = w }
+    return Member { name = nm, health = h, armor = a, weapon = w, strategy = strategyTml tml }
 
 genPartyFromTemplate :: String -> [String] -> PartyTemplate -> IO Party
 genPartyFromTemplate t nms ptml = do
@@ -88,12 +102,7 @@ allDead p = all (not . isAlive) (members p)
 halfRound :: Party -> Party -> IO Party
 halfRound attacker defender = do
     putStrLn $ "Party " ++ title attacker ++ "attacks:\n"
-    newmbs <- attackBy getMaxHealth (filter isAlive (members attacker)) (members defender)
+    newmbs <- attackBy (filter isAlive (members attacker)) (members defender)
     return defender { members = newmbs }
     where
-      attackBy _ [] dp = return dp
-      attackBy s (a : as) dp = do
-        dn <- attackByOne s a dp
-        attackBy s as dn
-      attackByOne s a dp = mapM (\d -> if d == s dp then doHit a d else return d) dp
-
+      attackBy as defParty = foldM (flip strategy) defParty as
