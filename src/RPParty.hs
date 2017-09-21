@@ -101,7 +101,7 @@ hitOneStrategy :: ([Member] -> Member) -> Strategy
 hitOneStrategy f am defms = mapM hitOne defms
   where 
   hitOne d
-    | d == f defms = doHit am d
+    | d == f defms = if isAlive d then doHit am d else return d
     | otherwise    = return d
 
 hitAllStrategy :: Strategy
