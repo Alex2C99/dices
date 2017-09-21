@@ -68,7 +68,7 @@ doHit attacker target = do
      execHit _ t False = do
         logResult False (0 :: Int)
         return t
-     logBegin a t = putStr $ name attacker ++ " attacks " ++ name target ++ ". "
+     logBegin a t = putStr $ "\t" ++ name attacker ++ " attacks " ++ name target ++ ". "
      logResult True v  = putStr $ "Hit! Damage: " ++ show v ++ "\n"
      logResult False _ = putStr "Miss!\n"
      logFinish t = when (health t == 0) $ putStrLn $ name t ++ " killed!\n"
@@ -115,9 +115,11 @@ minHealthStrategy = hitOneStrategy getMinHealth
 
 halfRound :: Party -> Party -> IO Party
 halfRound attacker defender = do
-    putStrLn $ "Party " ++ title attacker ++ "attacks:\n"
-    newmbs <- foldM (\dp a -> strategy a a dp) (filter isAlive (members attacker)) (members defender)
+    putStrLn $ "\nParty " ++ title attacker ++ " attacks:"
+    newmbs <- foldM (\dp a -> strategy a a dp) (alives (members defender)) (alives (members attacker))
     return defender { members = newmbs }
+    where 
+      alives = filter isAlive
 
 fighterTemlate = MTml {
   healthTml = ATml { throw = One, start = 10, top = 20 },
