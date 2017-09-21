@@ -37,7 +37,7 @@ isAlive :: Member -> Bool
 isAlive mb = health mb > 0
 
 isHit :: Member -> IO Bool
-isHit mb = ((> armor mb) . sumd) <$> cast One 20
+isHit mb = fmap ((> armor mb) . sumd) (cast One 20)
 
 getDamage :: Member -> Int -> Member
 getDamage mb dmg
@@ -67,7 +67,7 @@ getMaxHealth :: [Member] -> Member
 getMaxHealth = maximumBy (\a b -> compare (health a) (health b))
 
 genAttrFromTemplate :: AttribTemplate -> IO Int
-genAttrFromTemplate atml = ((start atml +) . sumd) <$> cast (throw atml) (top atml)
+genAttrFromTemplate atml = fmap ((start atml +) . sumd) (cast (throw atml) (top atml))
 
 
 genMemberFromTemplate :: String -> MemberTemplate -> IO Member
