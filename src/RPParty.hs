@@ -40,11 +40,6 @@ instance Eq Member where
     && (armor m1 == armor m2) 
     && (weapon m1 == weapon m2) 
 
-maxHealthStrategy :: Strategy
-maxHealthStrategy am defms = do 
-  let mh = getMaxHealth defms
-  mapM (\defm -> if defm == mh then doHit am defm else return defm) defms
-
 noname :: String
 noname = "NoName"
 
@@ -99,10 +94,15 @@ genPartyFromTemplate t nms ptml = do
 allDead :: Party -> Bool
 allDead p = all (not . isAlive) (members p)
 
+maxHealthStrategy :: Strategy
+maxHealthStrategy am defms = do 
+  let mh = getMaxHealth defms
+  mapM (\defm -> if defm == mh then doHit am defm else return defm) defms
+
 halfRound :: Party -> Party -> IO Party
 halfRound attacker defender = do
     putStrLn $ "Party " ++ title attacker ++ "attacks:\n"
     newmbs <- attackBy (filter isAlive (members attacker)) (members defender)
     return defender { members = newmbs }
     where
-      attackBy as defParty = foldM (flip strategy) defParty as
+      attackBy attP defP = foldM (\dp a -> strategy a a dp) defP attP
