@@ -39,3 +39,13 @@ playRound = do
     gn2 <- lift $ secondHalf gn1
     put gn2
     return (endgame gn2)
+
+playGame :: GameState
+playGame = do
+    g <- get
+    if endgame g then 
+      return (endgame g)
+    else do
+      gn <- lift $ execStateT playRound g
+      put gn
+      playGame

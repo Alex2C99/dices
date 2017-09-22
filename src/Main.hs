@@ -17,12 +17,6 @@ outMaybe _ Nothing  = return ()
 main :: IO ()
 main = do
   g <- initialGame
-  gfin <- play g
+  gfin <- execStateT playGame g
   putStr "Winner: "
   outMaybe (putStrLn . title) (winner gfin)
-  where
-  play gcur 
-    | endgame gcur = return gcur
-    | otherwise    = do
-         gnew <- execStateT playRound gcur
-         play gnew
