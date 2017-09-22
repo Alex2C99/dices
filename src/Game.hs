@@ -43,9 +43,7 @@ playRound = do
 playGame :: GameState
 playGame = do
     g <- get
-    if endgame g then 
-      return (endgame g)
-    else do
-      gn <- lift $ execStateT playRound g
-      put gn
+    if (not . endgame) g then do
+      playRound
       playGame
+    else return (endgame g)
