@@ -1,7 +1,7 @@
 module Game where
 
-import Control.Monad.State
-import RPParty
+import           Control.Monad.State
+import           RPParty
 
 data Game = Game {
   party1 :: Party,
@@ -15,7 +15,7 @@ endgame g = any (allDead . (\p -> p g)) [party1, party2]
 
 winner :: Game -> Maybe Party
 winner g
-  | endgame g = if allDead (party1 g) then return (party2 g) else return (party1 g)
+  | endgame g = return ((if allDead (party1 g) then party2 else party1) g)
   | otherwise = Nothing
 
 firstHalf :: Game -> IO Game
